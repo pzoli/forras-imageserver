@@ -44,7 +44,6 @@ class ImageUploadController(
             docInfo.clerk = clerkCRUDRepo.save(docInfo.clerk!!)
         }
         if (docInfo.id == null) {
-            docInfo.createdAt = Date()
             docInfo = docInfoRepo.save(docInfo)
         }
 
