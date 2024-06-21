@@ -8,7 +8,7 @@ With this Spring Boot project you can serve [DocuStorePictureApp](https://github
 - PostgreSQL server
 
 Before run the program, you must copy src/main/resources/example-application.properties to src/main/resources/application.properties and update the application settings.
-(Database access properties and file upload temporal path, ssl certificate properties)
+(Database access properties and file upload temporal path, ssl certificate properties and Basic auth username/password)
 
 ## generate ssl keystore
 
