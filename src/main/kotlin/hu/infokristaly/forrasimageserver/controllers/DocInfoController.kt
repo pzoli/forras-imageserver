@@ -25,7 +25,7 @@ class DocInfoController(@Autowired private val docInfoRepo: DocInfoRepo) {
 
     //get user by id
     @GetMapping("/{id}")
-    fun getDocInfoById(@PathVariable("id") id: Int): ResponseEntity<DocInfo> {
+    fun getDocInfoById(@PathVariable("id") id: Long): ResponseEntity<DocInfo> {
         val docInfo = docInfoRepo.findById(id).orElse(null)
         return if (docInfo != null) {
             ResponseEntity(docInfo, HttpStatus.OK)
@@ -36,7 +36,7 @@ class DocInfoController(@Autowired private val docInfoRepo: DocInfoRepo) {
 
     //update user
     @PutMapping("/{id}")
-    fun updateDocInfoById(@PathVariable("id") id: Int, @RequestBody docInfo: DocInfo): ResponseEntity<DocInfo> {
+    fun updateDocInfoById(@PathVariable("id") id: Long, @RequestBody docInfo: DocInfo): ResponseEntity<DocInfo> {
         val existingDocInfo = docInfoRepo.findById(id).orElse(null)
 
         if (existingDocInfo == null){
@@ -49,7 +49,7 @@ class DocInfoController(@Autowired private val docInfoRepo: DocInfoRepo) {
 
     //delete user
     @DeleteMapping("/{id}")
-    fun deleteDocInfoById(@PathVariable("id") id: Int): ResponseEntity<DocInfo> {
+    fun deleteDocInfoById(@PathVariable("id") id: Long): ResponseEntity<DocInfo> {
         if (!docInfoRepo.existsById(id)){
             return ResponseEntity(HttpStatus.NOT_FOUND)
         }

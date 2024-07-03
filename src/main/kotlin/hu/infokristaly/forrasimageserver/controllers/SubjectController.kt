@@ -1,6 +1,6 @@
 package hu.infokristaly.forrasimageserver.controllers
 
-import hu.infokristaly.forrasimageserver.entity.Subject
+import hu.infokristaly.forrasimageserver.entity.DocumentSubject
 import hu.infokristaly.forrasimageserver.repository.SubjectCRUDRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -12,19 +12,19 @@ import org.springframework.web.bind.annotation.*
 class SubjectController(@Autowired private val subjectCRUDRepository: SubjectCRUDRepository) {
 
     @GetMapping("")
-    fun getAllSubjects(): List<Subject> =
+    fun getAllSubjects(): List<DocumentSubject> =
         subjectCRUDRepository.findAll().toList()
 
     //create user
     @PostMapping("")
-    fun createSubject(@RequestBody subject: Subject): ResponseEntity<Subject> {
+    fun createSubject(@RequestBody subject: DocumentSubject): ResponseEntity<DocumentSubject> {
         val savedSubject = subjectCRUDRepository.save(subject)
         return ResponseEntity(savedSubject, HttpStatus.CREATED)
     }
 
     //get user by id
     @GetMapping("/{id}")
-    fun getSubjectById(@PathVariable("id") id: Int): ResponseEntity<Subject> {
+    fun getSubjectById(@PathVariable("id") id: Long): ResponseEntity<DocumentSubject> {
         val subject = subjectCRUDRepository.findById(id).orElse(null)
         return if (subject != null) {
             ResponseEntity(subject, HttpStatus.OK)
@@ -35,7 +35,7 @@ class SubjectController(@Autowired private val subjectCRUDRepository: SubjectCRU
 
     //update user
     @PutMapping("/{id}")
-    fun updateSubjectById(@PathVariable("id") id: Int, @RequestBody subject: Subject): ResponseEntity<Subject> {
+    fun updateSubjectById(@PathVariable("id") id: Long, @RequestBody subject: DocumentSubject): ResponseEntity<DocumentSubject> {
         val existingSubject = subjectCRUDRepository.findById(id).orElse(null)
 
         if (existingSubject == null){
@@ -48,7 +48,7 @@ class SubjectController(@Autowired private val subjectCRUDRepository: SubjectCRU
 
     //delete user
     @DeleteMapping("/{id}")
-    fun deleteSubjectById(@PathVariable("id") id: Int): ResponseEntity<Subject> {
+    fun deleteSubjectById(@PathVariable("id") id: Long): ResponseEntity<DocumentSubject> {
         if (!subjectCRUDRepository.existsById(id)){
             return ResponseEntity(HttpStatus.NOT_FOUND)
         }

@@ -27,6 +27,7 @@ public class FileInfo implements Serializable {
 
     @Basic
     @ManyToOne
+    @JoinColumn(name="doc_info_id")
     private DocInfo docInfo;
 
     public Integer getId() {

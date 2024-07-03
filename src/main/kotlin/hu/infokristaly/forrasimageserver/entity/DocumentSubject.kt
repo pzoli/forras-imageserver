@@ -4,12 +4,12 @@ import jakarta.persistence.*
 
 @Entity
 @Cacheable(value = true)
-@Table(name = "subject")
-class Subject (
+@Table(name = "document_subject")
+class DocumentSubject (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(unique = true, nullable = false)
-    var id: Int?,
+    var id: Long?,
 
     @Basic
     var value: String

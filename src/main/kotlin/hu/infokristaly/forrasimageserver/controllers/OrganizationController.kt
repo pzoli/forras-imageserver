@@ -1,7 +1,6 @@
 package hu.infokristaly.forrasimageserver.controllers
 
 import hu.infokristaly.forrasimageserver.entity.Organization
-import hu.infokristaly.forrasimageserver.entity.Subject
 import hu.infokristaly.forrasimageserver.repository.OrganizationCRUDRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -25,7 +24,7 @@ class OrganizationController(@Autowired private val organizationRepository: Orga
 
     //get user by id
     @GetMapping("/{id}")
-    fun getOrganizationById(@PathVariable("id") id: Int): ResponseEntity<Organization> {
+    fun getOrganizationById(@PathVariable("id") id: Long): ResponseEntity<Organization> {
         val subject = organizationRepository.findById(id).orElse(null)
         return if (subject != null) {
             ResponseEntity(subject, HttpStatus.OK)
@@ -36,7 +35,7 @@ class OrganizationController(@Autowired private val organizationRepository: Orga
 
     //update user
     @PutMapping("/{id}")
-    fun updateOrganizationById(@PathVariable("id") id: Int, @RequestBody organization: Organization): ResponseEntity<Organization> {
+    fun updateOrganizationById(@PathVariable("id") id: Long, @RequestBody organization: Organization): ResponseEntity<Organization> {
         val existingOrganization = organizationRepository.findById(id).orElse(null)
 
         if (existingOrganization == null){
@@ -49,7 +48,7 @@ class OrganizationController(@Autowired private val organizationRepository: Orga
 
     //delete user
     @DeleteMapping("/{id}")
-    fun deleteOrganizationById(@PathVariable("id") id: Int): ResponseEntity<Organization> {
+    fun deleteOrganizationById(@PathVariable("id") id: Long): ResponseEntity<Organization> {
         if (!organizationRepository.existsById(id)){
             return ResponseEntity(HttpStatus.NOT_FOUND)
         }

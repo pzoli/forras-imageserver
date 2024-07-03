@@ -5,5 +5,5 @@ import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface FileInfoCRUDRepository : CrudRepository<FileInfo, Int> {
+interface FileInfoCRUDRepository : CrudRepository<FileInfo, Long> {
 }

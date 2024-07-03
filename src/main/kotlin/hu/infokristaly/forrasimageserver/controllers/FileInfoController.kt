@@ -24,7 +24,7 @@ class FileInfoController(@Autowired private val fileInfoRepo: FileInfoRepo) {
 
     //get user by id
     @GetMapping("/{id}")
-    fun getFileInfoById(@PathVariable("id") id: Int): ResponseEntity<FileInfo> {
+    fun getFileInfoById(@PathVariable("id") id: Long): ResponseEntity<FileInfo> {
         val fileInfo = fileInfoRepo.findById(id).orElse(null)
         return if (fileInfo != null) {
             ResponseEntity(fileInfo, HttpStatus.OK)
@@ -35,7 +35,7 @@ class FileInfoController(@Autowired private val fileInfoRepo: FileInfoRepo) {
 
     //update user
     @PutMapping("/{id}")
-    fun updateFileInfoById(@PathVariable("id") id: Int, @RequestBody fileInfo: FileInfo): ResponseEntity<FileInfo> {
+    fun updateFileInfoById(@PathVariable("id") id: Long, @RequestBody fileInfo: FileInfo): ResponseEntity<FileInfo> {
         val existingFileInfo = fileInfoRepo.findById(id).orElse(null)
 
         if (existingFileInfo == null){
@@ -48,7 +48,7 @@ class FileInfoController(@Autowired private val fileInfoRepo: FileInfoRepo) {
 
     //delete user
     @DeleteMapping("/{id}")
-    fun deleteDocInfoById(@PathVariable("id") id: Int): ResponseEntity<FileInfo> {
+    fun deleteDocInfoById(@PathVariable("id") id: Long): ResponseEntity<FileInfo> {
         if (!fileInfoRepo.existsById(id)){
             return ResponseEntity(HttpStatus.NOT_FOUND)
         }

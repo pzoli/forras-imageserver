@@ -14,11 +14,11 @@ data class DocInfo(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(unique = true, nullable = false)
-    var id: Int?,
+    var id: Long?,
 
     @Basic
     @ManyToOne
-    var subject: Subject,
+    var subject: DocumentSubject,
 
     @Basic
     var direction: DocumentDirection,
@@ -34,5 +34,5 @@ data class DocInfo(
     @ManyToOne
     var clerk: Clerk?,
 
-) {
+    ) {
 }

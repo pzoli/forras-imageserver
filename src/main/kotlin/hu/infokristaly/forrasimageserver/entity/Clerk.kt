@@ -9,7 +9,7 @@ class Clerk(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(unique = true, nullable = false)
-    var id: Int?,
+    var id: Long?,
 
     @Basic
     var name: String,
