@@ -18,6 +18,11 @@ class Organization(
     var hqAddress: String,
 
     @Basic
-    var hqPhone: String
+    var hqPhone: String,
+
+    @Basic
+    @Version
+    var version: Long = 0L
+
 ) {
 }
