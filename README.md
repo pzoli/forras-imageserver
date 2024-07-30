@@ -16,3 +16,9 @@ Use the following to generate a self-signed certificate
 ```
 keytool -genkeypair -alias baeldung -keyalg RSA -keysize 2048 -storetype PKCS12 -keystore baeldung.p12 -validity 3650
 ```
+## Swagger-UI
+
+You can access Swagger-UI after start project
+```
+https://[host]:8088/swagger-ui/index.html
+```
