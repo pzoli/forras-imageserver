@@ -15,7 +15,7 @@ public class FileInfo implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(unique = true, nullable = false)
-    private Integer id;
+    private Long id;
 
     @Basic
     @Column(name = "uniqueFileName")
@@ -25,16 +25,15 @@ public class FileInfo implements Serializable {
     @Column(name = "lenght")
     private Long lenght;
 
-    @Basic
     @ManyToOne
     @JoinColumn(name="doc_info_id")
     private DocInfo docInfo;
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
