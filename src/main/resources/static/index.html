@@ -23,7 +23,7 @@
         }
 
         const wsUri = 'ws://localhost:8082';
-        var scanbutton, sendbutton, output, websocket, image, data, resolutionSelect, colorSelect, docinfo;
+        var scanbutton, sendbutton, output, websocket, image, data, resolutionSelect, colorSelect, openPaintCheckBox, docinfo;
         function init() {
             websocket = new WebSocket(wsUri);
             docinfo = get('docinfo');
@@ -31,6 +31,7 @@
             scanbutton = document.querySelector('#scanbutton');
             sendbutton = document.querySelector('#sendbutton')
             output = document.querySelector('#output');
+            openPaintCheckBox = document.querySelector('#openPaintCheckBox');
             image = document.querySelector('#image');
             scanbutton.addEventListener('click', scanButtonOnClick);
             sendbutton.addEventListener('click', sendButtonOnClick);
@@ -117,6 +118,7 @@
             const formData = new FormData();
             formData.append('file',imageBlob,'scanned.jpg');
             formData.append('docid', JSON.parse(docinfo).id);
+            formData.append('isStartPaint', openPaintCheckBox.checked);
             try {
                 const response = await fetch(url, {
                     method: 'POST',
@@ -138,19 +140,22 @@
 </head>
 <body onload="init()">
 <h2>WebSocket Test</h2>
-<button id="scanbutton">Scan</button>
-<button id="sendbutton">Save</button>
-<label for="resolution">Resolution:</label>
+<label for="resolution">Felbontás:</label>
 <select name="resolution" id="resolution">
     <option value="150">150</option>
     <option value="300">300</option>
 </select>
-<label for="color_mode">ColorMode:</label>
+<label for="color_mode">Sínséma:</label>
 <select name="color_mode" id="color_mode">
     <option value="1">Color</option>
     <option value="2">Grayscale</option>
     <option value="4">Black & White</option>
 </select>
+<label for="openPaintCheckBox">Paint megnyitása:</label>
+<input type="checkbox" id="openPaintCheckBox"/>
+<br/>
+<button id="scanbutton">Belovasás</button>
+<button id="sendbutton">Mentés</button>
 <div id="output"></div>
 <div id="cert"></div>
 <img id="image" />

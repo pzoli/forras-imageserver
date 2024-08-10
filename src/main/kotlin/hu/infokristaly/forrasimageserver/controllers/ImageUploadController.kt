@@ -35,7 +35,7 @@ class ImageUploadController(
     private var tempPath: String = ""
 
     @RequestMapping(value = arrayOf("/uploadimage"), method = arrayOf( RequestMethod.POST ), consumes = arrayOf(MediaType.MULTIPART_FORM_DATA_VALUE ))
-    fun uploadScannedImage(@RequestPart(name = "file") file: MultipartFile, @RequestPart(name = "docid") docid: String) {
+    fun uploadScannedImage(@RequestPart(name = "file") file: MultipartFile, @RequestPart(name = "docid") docid: String, @RequestPart(name = "isStartPaint") isStartPaint: String) {
         val docInfo = docInfoRepo.findById(docid.toLong());
         val simpleDateFormat = SimpleDateFormat("yyyyMMdd_HHmmss")
         val tempFile = File.createTempFile("IMG_" + simpleDateFormat.format(Date()) + "_" ,"."+ file.originalFilename?.substringAfter("."), File(tempPath))
@@ -55,7 +55,7 @@ class ImageUploadController(
         fileInfoCRUDRepository.save(fileInfo)
         val isWindows = System.getProperty("os.name")
             .lowercase(Locale.getDefault()).startsWith("windows")
-        if (isWindows) {
+        if (isWindows && "true".equals(isStartPaint)) {
             Runtime.getRuntime()
                 .exec(String.format("mspaint.exe " + tempFile.toString()))
         }
