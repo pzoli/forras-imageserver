@@ -16,7 +16,6 @@ data class DocInfo(
     @Column(unique = true, nullable = false)
     var id: Long?,
 
-    @Basic
     @ManyToOne
     var subject: DocumentSubject,
 
@@ -26,11 +25,9 @@ data class DocInfo(
     @Basic
     var createdAt: Date,
 
-    @Basic
     @ManyToOne
     var organization: Organization,
 
-    @Basic
     @ManyToOne
     var clerk: Clerk?,
 

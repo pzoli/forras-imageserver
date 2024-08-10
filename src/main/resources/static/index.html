@@ -1,5 +1,136 @@
+<!DOCTYPE html>
 <html>
-<body>
-Hello Homepage
+<head>
+    <style>
+        #output {
+            overflow: auto;
+        }
+        #output > p {
+            overflow-wrap: break-word;
+        }
+        #output span {
+            color: blue;
+        }
+        #output span.error {
+            color: red;
+        }
+    </style>
+    <script>
+        function get(name){
+            if(name=(new RegExp('[?&]'+encodeURIComponent(name)+'=([^&]*)')).exec(location.search))
+                return decodeURIComponent(name[1]);
+        }
+
+        const wsUri = 'ws://localhost:8082';
+        var scanbutton, sendbutton, output, websocket, image, data, docinfo;
+        function init() {
+            websocket = new WebSocket(wsUri);
+            docinfo = get('docinfo');
+            console.log(docinfo);
+            scanbutton = document.querySelector('#scanbutton');
+            sendbutton = document.querySelector('#sendbutton')
+            output = document.querySelector('#output');
+            image = document.querySelector('#image');
+            scanbutton.addEventListener('click', scanButtonOnClick);
+            sendbutton.addEventListener('click', sendButtonOnClick);
+
+            websocket.onopen = function (e) {
+                writeToScreen('CONNECTED');
+            };
+
+            websocket.onclose = function (e) {
+                writeToScreen('DISCONNECTED');
+            };
+
+            websocket.onmessage = function (e) {
+                if (e.data instanceof Blob) {
+                    reader = new FileReader();
+                    reader.addEventListener('loadend', () => {
+                        data = reader.result;
+                        image.src = data;
+                    });
+                    reader.readAsDataURL(e.data);
+                } else {
+                    writeToScreen('<span>RESPONSE: ' + e.data + '</span>');
+                }
+            };
+
+            websocket.onerror = function (e) {
+                writeToScreen('<span class=error>ERROR:</span> ' + e.data);
+            };
+        }
+        function doSend(message) {
+            writeToScreen('SENT: ' + message);
+            websocket.send(message);
+        }
+
+        function writeToScreen(message) {
+            output.insertAdjacentHTML(
+                'afterbegin',
+                '<p>' + message + '</p>',
+            );
+        }
+
+        function scanButtonOnClick() {
+            doSend("scan");
+        }
+
+        function sendButtonOnClick() {
+            sendImageAsPostRequest(
+                data.split(',')[1],
+                'image/jpeg',
+                '/api/file/uploadimage',
+            );
+        }
+
+        function decodeBase64(base64Data) {
+            return atob(base64Data);
+        }
+
+        function convertToUint8Array(binaryData) {
+            const bytes = new Uint8Array(binaryData.length);
+            for (let i = 0; i < binaryData.length; i++) {
+                bytes[i] = binaryData.charCodeAt(i);
+            }
+            return bytes;
+        }
+
+        function createBlobFromBase64(base64Data, mimeType) {
+            const binaryData = decodeBase64(base64Data);
+            const uint8Array = convertToUint8Array(binaryData);
+            return new Blob([uint8Array], { type: mimeType });
+        }
+
+        async function sendImageAsPostRequest(base64Data, mimeType, url) {
+            const imageBlob = createBlobFromBase64(base64Data, mimeType);
+            const formData = new FormData();
+            formData.append('file',imageBlob,'scanned.jpg');
+            formData.append('docid', JSON.parse(docinfo).id);
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (response.ok) {
+                    console.log('Image uploaded successfully');
+                    window.close();
+                } else {
+                    console.error('Error uploading image:', response.status);
+                    alert("Error uploading image:" + response.status);
+                }
+            } catch (e) {
+                console.log(e);
+            }
+        }
+    </script>
+</head>
+<body onload="init()">
+<h2>WebSocket Test</h2>
+<button id="scanbutton">Scan</button>
+<button id="sendbutton">Save</button>
+<div id="output"></div>
+<div id="cert"></div>
+<img id="image" />
 </body>
 </html>

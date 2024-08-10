@@ -6,14 +6,18 @@ import hu.infokristaly.forrasimageserver.entity.FileInfo
 import hu.infokristaly.forrasimageserver.repository.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.util.FileCopyUtils
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequest
+import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.net.URI
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.io.path.Path
 
@@ -29,7 +33,28 @@ class ImageUploadController(
 ) {
 
     @Value("\${temp.path}")
-    private val tempPath: String? = null
+    private var tempPath: String = ""
+
+    @RequestMapping(value = arrayOf("/uploadimage"), method = arrayOf( RequestMethod.POST ), consumes = arrayOf(MediaType.MULTIPART_FORM_DATA_VALUE ))
+    fun uploadScannedImage(@RequestPart(name = "file") file: MultipartFile, @RequestPart(name = "docid") docid: String) {
+        val docInfo = docInfoRepo.findById(docid.toLong());
+        val simpleDateFormat = SimpleDateFormat("yyyyMMdd_HHmmss")
+        val tempFile = File.createTempFile("IMG_" + simpleDateFormat.format(Date()) + "_" ,"."+ file.originalFilename?.substringAfter("."), File(tempPath))
+        try {
+            file.inputStream.use { `in` ->
+                FileOutputStream(tempFile).use { out ->
+                    FileCopyUtils.copy(`in`, out)
+                }
+            }
+        } catch (ex: IOException) {
+            throw RuntimeException(ex)
+        }
+        var fileInfo = FileInfo()
+        fileInfo.uniqueFileName = tempFile.name
+        fileInfo.lenght = tempFile.length()
+        fileInfo.docInfo = docInfo.get()
+        fileInfoCRUDRepository.save(fileInfo)
+    }
 
     @RequestMapping(value = arrayOf("/upload"), method = arrayOf( RequestMethod.POST ), consumes = arrayOf( MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_OCTET_STREAM_VALUE))
     fun fileUpload(@RequestPart("file") file: MultipartFile, @RequestPart("doc") doc: DocInfo) : FileInfo {
@@ -47,10 +72,11 @@ class ImageUploadController(
             docInfo = docInfoRepo.save(docInfo)
         }
 
-        val localFile = Path(tempPath.toString(), file.originalFilename.toString()).toFile()
+        val simpleDateFormat = SimpleDateFormat("yyyyMMdd_HHmmss")
+        val tempFile = File.createTempFile("IMG_" + simpleDateFormat.format(Date()) + "_" ,"."+ file.originalFilename?.substringAfter("."), File(tempPath))
         try {
             file.inputStream.use { `in` ->
-                FileOutputStream(localFile).use { out ->
+                FileOutputStream(tempFile).use { out ->
                     FileCopyUtils.copy(`in`, out)
                 }
             }
@@ -59,8 +85,8 @@ class ImageUploadController(
         }
 
         var fileInfo = FileInfo()
-        fileInfo.uniqueFileName = file.originalFilename
-        fileInfo.lenght = localFile.length()
+        fileInfo.uniqueFileName = tempFile.name
+        fileInfo.lenght = tempFile.length()
         fileInfo.docInfo = docInfo
         fileInfo = fileInfoCRUDRepository.save(fileInfo)
 
