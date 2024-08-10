@@ -1,16 +1,16 @@
 package hu.infokristaly.forrasimageserver.controllers
 
-import com.google.gson.Gson
 import hu.infokristaly.forrasimageserver.entity.DocInfo
 import hu.infokristaly.forrasimageserver.entity.FileInfo
 import hu.infokristaly.forrasimageserver.repository.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
-import org.springframework.http.ResponseEntity
 import org.springframework.util.FileCopyUtils
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestMethod
+import org.springframework.web.bind.annotation.RequestPart
+import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequest
 import java.io.File
@@ -19,7 +19,6 @@ import java.io.IOException
 import java.net.URI
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.io.path.Path
 
 
 @RestController
@@ -54,6 +53,12 @@ class ImageUploadController(
         fileInfo.lenght = tempFile.length()
         fileInfo.docInfo = docInfo.get()
         fileInfoCRUDRepository.save(fileInfo)
+        val isWindows = System.getProperty("os.name")
+            .lowercase(Locale.getDefault()).startsWith("windows")
+        if (isWindows) {
+            Runtime.getRuntime()
+                .exec(String.format("mspaint.exe " + tempFile.toString()))
+        }
     }
 
     @RequestMapping(value = arrayOf("/upload"), method = arrayOf( RequestMethod.POST ), consumes = arrayOf( MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_OCTET_STREAM_VALUE))
