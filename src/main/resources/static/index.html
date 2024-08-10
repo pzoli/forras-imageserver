@@ -23,7 +23,7 @@
         }
 
         const wsUri = 'ws://localhost:8082';
-        var scanbutton, sendbutton, output, websocket, image, data, docinfo;
+        var scanbutton, sendbutton, output, websocket, image, data, resolutionSelect, colorSelect, docinfo;
         function init() {
             websocket = new WebSocket(wsUri);
             docinfo = get('docinfo');
@@ -34,6 +34,9 @@
             image = document.querySelector('#image');
             scanbutton.addEventListener('click', scanButtonOnClick);
             sendbutton.addEventListener('click', sendButtonOnClick);
+
+            resolutionSelect = document.querySelector('#resolution');
+            colorSelect = document.querySelector('#color_mode');
 
             websocket.onopen = function (e) {
                 writeToScreen('CONNECTED');
@@ -73,7 +76,10 @@
         }
 
         function scanButtonOnClick() {
-            doSend("scan");
+            var resolution = resolutionSelect.value;
+            var color_mode = colorSelect.value;
+            var action = {action:'scan',color_mode:Number.parseInt(color_mode),resolution:Number.parseInt(resolution)}
+            doSend(JSON.stringify(action));
         }
 
         function sendButtonOnClick() {
@@ -134,6 +140,17 @@
 <h2>WebSocket Test</h2>
 <button id="scanbutton">Scan</button>
 <button id="sendbutton">Save</button>
+<label for="resolution">Resolution:</label>
+<select name="resolution" id="resolution">
+    <option value="150">150</option>
+    <option value="300">300</option>
+</select>
+<label for="color_mode">ColorMode:</label>
+<select name="color_mode" id="color_mode">
+    <option value="1">Color</option>
+    <option value="2">Grayscale</option>
+    <option value="4">Black & White</option>
+</select>
 <div id="output"></div>
 <div id="cert"></div>
 <img id="image" />
