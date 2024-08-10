@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
     <style>
         #output {
             overflow: auto;
@@ -76,11 +77,15 @@
         }
 
         function sendButtonOnClick() {
-            sendImageAsPostRequest(
-                data.split(',')[1],
-                'image/jpeg',
-                '/api/file/uploadimage',
-            );
+            if (data) {
+                sendImageAsPostRequest(
+                    data.split(',')[1],
+                    'image/jpeg',
+                    '/api/file/uploadimage',
+                );
+            } else {
+                alert('Nincs beolvasott elmenthető kép!')
+            }
         }
 
         function decodeBase64(base64Data) {
