@@ -118,7 +118,7 @@
             const formData = new FormData();
             formData.append('file',imageBlob,'scanned.jpg');
             formData.append('docid', JSON.parse(docinfo).id);
-            formData.append('isStartPaint', openPaintCheckBox.checked);
+            formData.append('openPaint', openPaintCheckBox.checked);
             try {
                 const response = await fetch(url, {
                     method: 'POST',
@@ -145,10 +145,10 @@
     <option value="150">150</option>
     <option value="300">300</option>
 </select>
-<label for="color_mode">Sínséma:</label>
+<label for="color_mode">Szín séma:</label>
 <select name="color_mode" id="color_mode">
     <option value="1">Color</option>
-    <option value="2">Grayscale</option>
+    <option value="2" selected>Grayscale</option>
     <option value="4">Black & White</option>
 </select>
 <label for="openPaintCheckBox">Paint megnyitása:</label>
