@@ -23,19 +23,37 @@
         }
 
         const wsUri = 'ws://localhost:8082';
-        var scanbutton, sendbutton, output, websocket, image, data, resolutionSelect, colorSelect, openPaintCheckBox, docinfo;
+        var scanbutton, sendbutton, cropbutton, restorebutton,
+            output, websocket,
+            image, data,
+            resolutionSelect, colorSelect, openPaintCheckBox,
+            docinfo, cropper, canvas, ctx;
+
         function init() {
             websocket = new WebSocket(wsUri);
             docinfo = get('docinfo');
             console.log(docinfo);
             scanbutton = document.querySelector('#scanbutton');
-            sendbutton = document.querySelector('#sendbutton')
+            sendbutton = document.querySelector('#sendbutton');
+            cropbutton = document.querySelector('#cropbutton');
+            restorebutton = document.querySelector('#restorebutton');
             output = document.querySelector('#output');
             openPaintCheckBox = document.querySelector('#openPaintCheckBox');
-            image = document.querySelector('#image');
+            image = new Image();
+            canvas = document.querySelector('#canvas')
+            ctx = canvas.getContext("2d");
+
+            image.addEventListener("load", (e) => {
+                canvas.width = image.width;
+                canvas.height = image.height;
+                ctx.drawImage(image, 0, 0);
+                cropper = new Cropper(canvas);
+            });
+
             scanbutton.addEventListener('click', scanButtonOnClick);
             sendbutton.addEventListener('click', sendButtonOnClick);
-
+            cropbutton.addEventListener('click', cropButtonOnClick);
+            restorebutton.addEventListener('click', restoreButtonClick);
             resolutionSelect = document.querySelector('#resolution');
             colorSelect = document.querySelector('#color_mode');
 
@@ -49,7 +67,7 @@
 
             websocket.onmessage = function (e) {
                 if (e.data instanceof Blob) {
-                    reader = new FileReader();
+                    var reader = new FileReader();
                     reader.addEventListener('loadend', () => {
                         data = reader.result;
                         image.src = data;
@@ -83,40 +101,39 @@
             doSend(JSON.stringify(action));
         }
 
+        function cropButtonOnClick() {
+            var croppedCanvas = cropper.getCroppedCanvas();
+            croppedCanvas.setAttribute('id','canvas');
+            canvas = croppedCanvas;
+            ctx = canvas.getContext('2d');
+            $("#canvaswrapper").html(croppedCanvas);
+            cropper = new Cropper(canvas);
+        }
+
+        function restoreButtonClick() {
+            cropper.destroy();
+            image.src = data;
+            canvas.width = image.width;
+            canvas.height = image.height;
+        }
+
         function sendButtonOnClick() {
             if (data) {
-                sendImageAsPostRequest(
-                    data.split(',')[1],
-                    'image/jpeg',
-                    '/api/file/uploadimage',
-                );
+                canvas.toBlob((blob) => {
+                    sendImageAsPostRequest(
+                        blob,
+                        'image/png',
+                        '/api/file/uploadimage',
+                    );
+                });
             } else {
                 alert('Nincs beolvasott elmenthető kép!')
             }
         }
 
-        function decodeBase64(base64Data) {
-            return atob(base64Data);
-        }
-
-        function convertToUint8Array(binaryData) {
-            const bytes = new Uint8Array(binaryData.length);
-            for (let i = 0; i < binaryData.length; i++) {
-                bytes[i] = binaryData.charCodeAt(i);
-            }
-            return bytes;
-        }
-
-        function createBlobFromBase64(base64Data, mimeType) {
-            const binaryData = decodeBase64(base64Data);
-            const uint8Array = convertToUint8Array(binaryData);
-            return new Blob([uint8Array], { type: mimeType });
-        }
-
-        async function sendImageAsPostRequest(base64Data, mimeType, url) {
-            const imageBlob = createBlobFromBase64(base64Data, mimeType);
+        async function sendImageAsPostRequest(imageBlob, mimeType, url) {
             const formData = new FormData();
-            formData.append('file',imageBlob,'scanned.jpg');
+            formData.append('file',imageBlob,'scanned.png');
             formData.append('docid', JSON.parse(docinfo).id);
             formData.append('openPaint', openPaintCheckBox.checked);
             try {
@@ -137,27 +154,34 @@
             }
         }
     </script>
+    <script src="/cropper.js"></script>
+    <script src="/jquery-3.7.1.js"></script>
+    <link rel="stylesheet" href="/cropper.css"/>
 </head>
 <body onload="init()">
-<h2>WebSocket Test</h2>
-<label for="resolution">Felbontás:</label>
-<select name="resolution" id="resolution">
-    <option value="150">150</option>
-    <option value="300">300</option>
-</select>
-<label for="color_mode">Szín séma:</label>
-<select name="color_mode" id="color_mode">
-    <option value="1">Color</option>
-    <option value="2" selected>Grayscale</option>
-    <option value="4">Black & White</option>
-</select>
-<label for="openPaintCheckBox">Paint megnyitása:</label>
-<input type="checkbox" id="openPaintCheckBox"/>
-<br/>
-<button id="scanbutton">Belovasás</button>
-<button id="sendbutton">Mentés</button>
-<div id="output"></div>
-<div id="cert"></div>
-<img id="image" />
+    <h2>WebSocket Test</h2>
+    <label for="resolution">Felbontás:</label>
+    <select name="resolution" id="resolution">
+        <option value="150">150</option>
+        <option value="300">300</option>
+    </select>
+    <label for="color_mode">Szín séma:</label>
+    <select name="color_mode" id="color_mode">
+        <option value="1">Color</option>
+        <option value="2" selected>Grayscale</option>
+        <option value="4">Black & White</option>
+    </select>
+    <label for="openPaintCheckBox">Paint megnyitása:</label>
+    <input type="checkbox" id="openPaintCheckBox"/>
+    <br/>
+    <button id="scanbutton">Belovasás</button>
+    <button id="sendbutton">Mentés</button>
+    <button id="cropbutton">Vágás</button>
+    <button id="restorebutton">Visszaállít</button>
+    <div id="output"></div>
+    <div id="cert"></div>
+    <div id="canvaswrapper">
+        <canvas id="canvas"/>
+    </div>
 </body>
 </html>
