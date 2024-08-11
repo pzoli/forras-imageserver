@@ -50,6 +50,11 @@
             margin: -0.5rem -0.75rem;
             padding: 0.5rem 0.75rem;
         }
+
+        .controlpanel {
+            background-color: #6c757d;
+            padding: 10px;
+        }
     </style>
     <script>
         function get(name){
@@ -137,19 +142,23 @@
         }
 
         function cropButtonOnClick() {
-            var croppedCanvas = cropper.getCroppedCanvas();
-            croppedCanvas.setAttribute('id','canvas');
-            canvas = croppedCanvas;
-            ctx = canvas.getContext('2d');
-            $("#canvaswrapper").html(croppedCanvas);
-            cropper = new Cropper(canvas);
+            if (cropper) {
+                var croppedCanvas = cropper.getCroppedCanvas();
+                croppedCanvas.setAttribute('id', 'canvas');
+                canvas = croppedCanvas;
+                ctx = canvas.getContext('2d');
+                $("#canvaswrapper").html(croppedCanvas);
+                cropper = new Cropper(canvas);
+            }
         }
 
         function restoreButtonClick() {
-            cropper.destroy();
-            image.src = data;
-            canvas.width = image.width;
-            canvas.height = image.height;
+            if (cropper) {
+                cropper.destroy();
+                image.src = data;
+                canvas.width = image.width;
+                canvas.height = image.height;
+            }
         }
 
         function sendButtonOnClick() {
@@ -213,27 +222,28 @@
         <input type="checkbox" id="openPaintCheckBox" class="form-check-input"/>
     </div>
     <br/>
-    <button id="scanbutton" class="btn btn-primary">
-        <span class="docs-tooltip" data-toggle="tooltip" title="Beolvasás">
-            <span class="fa fa-scan"></span>
-        </span>
-    </button>
-    <button id="sendbutton" class="btn btn-primary">
-        <span class="docs-tooltip" data-toggle="tooltip" title="Feltöltés">
-            <span class="fa fa-upload"></span>
-        </span>
-    </button>
-    <button id="cropbutton" class="btn btn-primary">
-        <span class="docs-tooltip" data-toggle="tooltip" title="Vágás">
-            <span class="fa fa-crop-alt"></span>
-        </span>
-    </button>
-    <button id="restorebutton" class="btn btn-primary">
-        <span class="docs-tooltip" data-toggle="tooltip" title="Visszaállítás">
-            <span class="fa fa-sync-alt"></span>
-        </span>
-
-    </button>
+    <div class="controlpanel">
+        <button id="scanbutton" class="btn btn-primary">
+            <span class="docs-tooltip" data-toggle="tooltip" title="Beolvasás">
+                <span class="fa fa-scan"></span>
+            </span>
+        </button>
+        <button id="sendbutton" class="btn btn-primary">
+            <span class="docs-tooltip" data-toggle="tooltip" title="Feltöltés">
+                <span class="fa fa-upload"></span>
+            </span>
+        </button>
+        <button id="cropbutton" class="btn btn-primary">
+            <span class="docs-tooltip" data-toggle="tooltip" title="Vágás">
+                <span class="fa fa-crop-alt"></span>
+            </span>
+        </button>
+        <button id="restorebutton" class="btn btn-primary">
+            <span class="docs-tooltip" data-toggle="tooltip" title="Visszaállítás">
+                <span class="fa fa-sync-alt"></span>
+            </span>
+        </button>
+    </div>
     <div id="output"></div>
     <div id="cert"></div>
     <div id="canvaswrapper">
