@@ -63,7 +63,7 @@
         }
 
         const wsUri = 'ws://localhost:8082';
-        var scanbutton, sendbutton, cropbutton, restorebutton,
+        var scanbutton, sendbutton, cropbutton, restorebutton, scandialogbutton,
             output, websocket,
             image, data,
             resolutionSelect, colorSelect, openPaintCheckBox,
@@ -77,6 +77,8 @@
             sendbutton = document.querySelector('#sendbutton');
             cropbutton = document.querySelector('#cropbutton');
             restorebutton = document.querySelector('#restorebutton');
+            scandialogbutton = document.querySelector('#scandialogbutton');
+
             output = document.querySelector('#output');
             openPaintCheckBox = document.querySelector('#openPaintCheckBox');
             image = new Image();
@@ -94,6 +96,7 @@
             sendbutton.addEventListener('click', sendButtonOnClick);
             cropbutton.addEventListener('click', cropButtonOnClick);
             restorebutton.addEventListener('click', restoreButtonClick);
+            scandialogbutton.addEventListener('click', scandialogbuttonOnClick);
             resolutionSelect = document.querySelector('#resolution');
             colorSelect = document.querySelector('#color_mode');
 
@@ -109,12 +112,16 @@
                 if (e.data instanceof Blob) {
                     var reader = new FileReader();
                     reader.addEventListener('loadend', () => {
+                        if (cropper) {
+                            cropper.destroy();
+                        }
                         data = reader.result;
                         image.src = data;
+                        $('#dialog').modal('toggle');
                     });
                     reader.readAsDataURL(e.data);
                 } else {
-                    writeToScreen('<span>RESPONSE: ' + e.data + '</span>');
+                    alert(e.data);
                 }
             };
 
@@ -123,7 +130,7 @@
             };
         }
         function doSend(message) {
-            writeToScreen('SENT: ' + message);
+            //writeToScreen('SENT: ' + message);
             websocket.send(message);
         }
 
@@ -139,6 +146,10 @@
             var color_mode = colorSelect.value;
             var action = {action:'scan',color_mode:Number.parseInt(color_mode),resolution:Number.parseInt(resolution)}
             doSend(JSON.stringify(action));
+        }
+
+        function scandialogbuttonOnClick() {
+            $('#dialog').modal();
         }
 
         function cropButtonOnClick() {
@@ -206,24 +217,39 @@
 </head>
 <body onload="init()" class="body">
     <h2>Image scanner</h2>
-    <label for="resolution">Felbontás:</label>
-    <select name="resolution" id="resolution" class="form-select" style="width: 20%;">
-        <option value="150">150</option>
-        <option value="300">300</option>
-    </select>
-    <label for="color_mode">Szín séma:</label>
-    <select name="color_mode" id="color_mode" class="form-select" style="width: 20%;">
-        <option value="1">Color</option>
-        <option value="2" selected>Grayscale</option>
-        <option value="4">Black & White</option>
-    </select>
-    <div class="form-check">
-        <label for="openPaintCheckBox" class="form-check-label">Paint megnyitása:</label>
-        <input type="checkbox" id="openPaintCheckBox" class="form-check-input"/>
+    <div id="dialog" tabindex="-1" class="modal fade docs-cropped" style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Beolvasás</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <label for="resolution">Felbontás:</label>
+                    <select name="resolution" id="resolution" class="form-select">
+                        <option value="150">150</option>
+                        <option value="300">300</option>
+                    </select>
+                    <label for="color_mode">Szín séma:</label>
+                    <select name="color_mode" id="color_mode" class="form-select">
+                        <option value="1">Color</option>
+                        <option value="2" selected>Grayscale</option>
+                        <option value="4">Black & White</option>
+                    </select>
+                    <div class="form-check">
+                        <label for="openPaintCheckBox" class="form-check-label">Paint megnyitása feltöltés után</label>
+                        <input type="checkbox" id="openPaintCheckBox" class="form-check-input"/>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mégsem</button>
+                    <button id="scanbutton" class="btn btn-primary">Beolvasás</button>
+                </div>
+            </div>
+        </div>
     </div>
-    <br/>
     <div class="controlpanel">
-        <button id="scanbutton" class="btn btn-primary">
+        <button id="scandialogbutton" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#dialog">
             <span class="docs-tooltip" data-toggle="tooltip" title="Beolvasás">
                 <span class="fa fa-scan"></span>
             </span>
