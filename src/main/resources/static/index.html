@@ -121,6 +121,8 @@
                     });
                     reader.readAsDataURL(e.data);
                 } else {
+                    $('#spinner').hide();
+                    $(scanbutton).prop( "disabled", false );
                     alert(e.data);
                 }
             };
@@ -146,6 +148,8 @@
             var color_mode = colorSelect.value;
             var action = {action:'scan',color_mode:Number.parseInt(color_mode),resolution:Number.parseInt(resolution)}
             doSend(JSON.stringify(action));
+            $(scanbutton).prop( "disabled", true );
+            $('#spinner').show();
         }
 
         function scandialogbuttonOnClick() {
@@ -243,7 +247,10 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mégsem</button>
-                    <button id="scanbutton" class="btn btn-primary">Beolvasás</button>
+                    <button id="scanbutton" class="btn btn-primary">
+                        <span id="spinner" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
+                        Beolvasás
+                    </button>
                 </div>
             </div>
         </div>
