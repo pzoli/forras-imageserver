@@ -118,7 +118,7 @@
                         data = reader.result;
                         image.src = data;
                         $('#spinner').hide();
-                        $(scanbutton).prop( "disabled", true );
+                        $(scanbutton).prop( "disabled", false );
                         $('#dialog').modal('toggle');
                     });
                     reader.readAsDataURL(e.data);
