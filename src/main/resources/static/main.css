@@ -1,0 +1,61 @@
+.body {
+    background-color: #8bb9fe;
+}
+#output {
+    overflow: auto;
+}
+#output > p {
+    overflow-wrap: break-word;
+}
+#output span {
+    color: blue;
+}
+#output span.error {
+    color: red;
+}
+
+.fa {
+    -moz-osx-font-smoothing:grayscale;
+    -webkit-font-smoothing:antialiased;
+    display:inline-block;
+    font-style:normal;
+    font-variant:normal;
+    text-rendering:auto;
+    line-height:1
+}
+.fa-crop-alt:before {
+    content:"\f565";
+}
+
+.fa-upload:before {
+    content:"\f093"
+}
+
+.fa-sync-alt:before {
+    content:"\f2f1"
+}
+
+.fa-scan:before {
+    content:"\f1c5"
+}
+
+.docs-tooltip {
+    display: block;
+    margin: -0.5rem -0.75rem;
+    padding: 0.5rem 0.75rem;
+}
+
+.controlpanel {
+    background-color: #6c757d;
+    padding: 10px;
+}
+
+.main-header {
+    background-color: #052c65;
+    margin: 15px;
+    padding: 5px;
+    text-align: center;
+    border-radius: 15px;
+    border-style: solid;
+    border-color: #6c757d;
+}
