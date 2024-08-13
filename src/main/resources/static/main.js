@@ -30,7 +30,11 @@ function init() {
         canvas.width = image.width;
         canvas.height = image.height;
         ctx.drawImage(image, 0, 0);
-        cropper = new Cropper(canvas);
+        cropper = new Cropper(canvas, {
+            autoCropArea:1,
+            viewMode: 3,
+        });
+
     });
 
     scanbutton.addEventListener('click', scanButtonOnClick);
@@ -161,10 +165,14 @@ async function sendImageAsPostRequest(imageBlob, mimeType, url) {
 
         if (response.ok) {
             console.log('Image uploaded successfully');
-            window.close();
+            if (confirm("Kép elküldve. Beolvas új képet?")) {
+                cropper.destroy()
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                data = null;
+            }
         } else {
             console.error('Error uploading image:', response.status);
-            alert("Error uploading image:" + response.status);
+            alert("Hiba történt a kép feltöltése közben:" + response.status);
         }
     } catch (e) {
         console.log(e);
