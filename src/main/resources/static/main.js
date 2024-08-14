@@ -4,24 +4,16 @@ function get(name){
 }
 
 const wsUri = 'ws://localhost:8082';
-var scanbutton, sendbutton, cropbutton, restorebutton, scandialogbutton,
-    output, websocket,
+var
+    websocket,
     image, data,
-    resolutionSelect, colorSelect, openPaintCheckBox,
     docinfo, cropper, canvas, ctx;
 
 function init() {
     websocket = new WebSocket(wsUri);
     docinfo = get('docinfo');
     console.log(docinfo);
-    scanbutton = document.querySelector('#scanbutton');
-    sendbutton = document.querySelector('#sendbutton');
-    cropbutton = document.querySelector('#cropbutton');
-    restorebutton = document.querySelector('#restorebutton');
-    scandialogbutton = document.querySelector('#scandialogbutton');
 
-    output = document.querySelector('#output');
-    openPaintCheckBox = document.querySelector('#openPaintCheckBox');
     image = new Image();
     canvas = document.querySelector('#canvas')
     ctx = canvas.getContext("2d");
@@ -32,16 +24,18 @@ function init() {
         ctx.drawImage(image, 0, 0);
         cropper = new Cropper(canvas, {
             autoCropArea:1,
-            viewMode: 3,
+            viewMode: 0,
         });
 
     });
 
-    scanbutton.addEventListener('click', scanButtonOnClick);
-    sendbutton.addEventListener('click', sendButtonOnClick);
-    cropbutton.addEventListener('click', cropButtonOnClick);
-    restorebutton.addEventListener('click', restoreButtonClick);
-    scandialogbutton.addEventListener('click', scandialogbuttonOnClick);
+    $('#scanbutton').on('click', scanButtonOnClick);
+    $('#sendbutton').on('click', sendButtonOnClick);
+    $('#cropbutton').on('click', cropButtonOnClick);
+    $('#restorebutton').on('click', restoreButtonClick);
+    $('#scandialogbutton').on('click', scandialogbuttonOnClick);
+    $('#zoomOutButton').on('click', zoomOutButtonOnClick)
+    $('#zoomInButton').on('click', zoomInButtonOnClick)
     resolutionSelect = document.querySelector('#resolution');
     colorSelect = document.querySelector('#color_mode');
 
@@ -64,7 +58,7 @@ function init() {
                 data = reader.result;
                 image.src = data;
                 $('#spinner').hide();
-                $(scanbutton).prop( "disabled", false );
+                $('#scanbutton').prop( "disabled", false );
                 $('#dialog').modal('toggle');
             });
             reader.readAsDataURL(e.data);
@@ -84,7 +78,7 @@ function init() {
                 alert(e.data)
             }
             $('#spinner').hide();
-            $(scanbutton).prop( "disabled", false );
+            $('#scanbutton').prop( "disabled", false );
         }
     };
 
@@ -98,19 +92,16 @@ function doSend(message) {
 }
 
 function writeToScreen(message) {
-    output.insertAdjacentHTML(
-        'afterbegin',
-        '<p>' + message + '</p>',
-    );
+    $('<p>' + message + '</p>').prependTo($('#output'));
 }
 
 function scanButtonOnClick() {
     const assetId = $('#asset :selected').val();
-    const resolution = resolutionSelect.value;
-    const color_mode = colorSelect.value;
+    const resolution = $('#resolution').val();
+    const color_mode = $('#color_mode').val();
     const action = {action:'scan',assetId:Number.parseInt(assetId),color_mode:Number.parseInt(color_mode),resolution:Number.parseInt(resolution)}
     doSend(JSON.stringify(action));
-    $(scanbutton).prop( "disabled", true );
+    $('#scanbutton').prop( "disabled", true );
     $('#spinner').show();
 }
 
@@ -125,7 +116,10 @@ function cropButtonOnClick() {
         canvas = croppedCanvas;
         ctx = canvas.getContext('2d');
         $("#canvaswrapper").html(croppedCanvas);
-        cropper = new Cropper(canvas);
+        cropper = new Cropper(canvas,{
+                autoCropArea:1,
+                viewMode: 0,
+        });
     }
 }
 
@@ -156,7 +150,7 @@ async function sendImageAsPostRequest(imageBlob, mimeType, url) {
     const formData = new FormData();
     formData.append('file',imageBlob,'scanned.png');
     formData.append('docid', JSON.parse(docinfo).id);
-    formData.append('openPaint', openPaintCheckBox.checked);
+    formData.append('openPaint', $('#openPaintCheckBox').is(":checked"));
     try {
         const response = await fetch(url, {
             method: 'POST',
@@ -177,4 +171,12 @@ async function sendImageAsPostRequest(imageBlob, mimeType, url) {
     } catch (e) {
         console.log(e);
     }
+}
+
+function zoomOutButtonOnClick() {
+    cropper.zoom(-0.1);
+}
+
+function zoomInButtonOnClick() {
+    cropper.zoom(0.1);
 }
