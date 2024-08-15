@@ -22,5 +22,6 @@ You can access Swagger-UI after start project
 ```
 https://[host]:8088/swagger-ui/index.html
 ```
+## Scan image from browser
 You should use image scanner browser client at https://[host]:8088/index.html that is protected with BASIC authentication with username/password set at application.properties.
 The scanning require [ForrasAdminScannerWebsocket](https://github.com/pzoli/ForrasAdminScannerWebsocket) project to serve WebSocket requests.
