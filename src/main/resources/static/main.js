@@ -23,10 +23,14 @@ function init() {
         canvas.height = image.height;
         ctx.drawImage(image, 0, 0);
         cropper = new Cropper(canvas, {
-            autoCropArea:1,
-            viewMode: 0,
+            modal: false,
+            ready()
+            {
+                this.cropper.moveTo(0, 0);
+                const canvasData = this.cropper.getCanvasData()
+                this.cropper.setCropBoxData({left:0,top:0,width:canvasData.width,height:canvasData.height})
+            }
         });
-
     });
 
     $('#scanbutton').on('click', scanButtonOnClick);
@@ -117,8 +121,13 @@ function cropButtonOnClick() {
         ctx = canvas.getContext('2d');
         $("#canvaswrapper").html(croppedCanvas);
         cropper = new Cropper(canvas,{
-                autoCropArea:1,
-                viewMode: 0,
+            modal: false,
+            ready()
+            {
+                this.cropper.moveTo(0, 0);
+                const canvasData = this.cropper.getCanvasData()
+                this.cropper.setCropBoxData({left:0,top:0,width:canvasData.width,height:canvasData.height})
+            }
         });
     }
 }
