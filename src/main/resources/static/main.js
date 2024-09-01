@@ -103,7 +103,7 @@ function scanButtonOnClick() {
     const assetId = $('#asset :selected').val();
     const resolution = $('#resolution').val();
     const color_mode = $('#color_mode').val();
-    const action = {action:'scan',assetId:Number.parseInt(assetId),color_mode:Number.parseInt(color_mode),resolution:Number.parseInt(resolution)}
+    const action = {action:'scan',assetId:assetId,color_mode:Number.parseInt(color_mode),resolution:Number.parseInt(resolution)}
     doSend(JSON.stringify(action));
     $('#scanbutton').prop( "disabled", true );
     $('#spinner').show();
