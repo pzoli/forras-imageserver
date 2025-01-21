@@ -40,6 +40,7 @@ function init() {
     $('#scandialogbutton').on('click', scandialogbuttonOnClick);
     $('#zoomOutButton').on('click', zoomOutButtonOnClick)
     $('#zoomInButton').on('click', zoomInButtonOnClick)
+    $('#refresh-config').on('click', refreshConfigButtonOnClock)
     resolutionSelect = document.querySelector('#resolution');
     colorSelect = document.querySelector('#color_mode');
 
@@ -97,6 +98,13 @@ function doSend(message) {
 
 function writeToScreen(message) {
     $('<p>' + message + '</p>').prependTo($('#output'));
+}
+
+function refreshConfigButtonOnClock() {
+    const action = {action : 'deviceinfo',resetConfig : true};
+    doSend(JSON.stringify(action));
+    $('#scanbutton').prop( "disabled", true );
+    $('#spinner').show();
 }
 
 function scanButtonOnClick() {
