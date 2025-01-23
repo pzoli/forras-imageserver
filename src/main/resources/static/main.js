@@ -47,6 +47,8 @@ function init() {
     websocket.onopen = function (e) {
         writeToScreen('CONNECTED');
         doSend(JSON.stringify({action:'deviceinfo'}));
+        $('#scanbutton').prop( "disabled", true );
+        $('#spinner').show();
     };
 
     websocket.onclose = function (e) {
