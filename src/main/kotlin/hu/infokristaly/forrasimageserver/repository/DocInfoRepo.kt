@@ -11,6 +11,11 @@ import org.springframework.stereotype.Repository
 interface DocInfoRepo : JpaRepository<DocInfo, Long> {
 
     @Query("FROM DocInfo WHERE subject = :subject")
-    fun findAllByFirstName(@Param("subject") subject: DocumentSubject):
+    fun findAllBySubject(@Param("subject") subject: DocumentSubject):
             List<DocInfo>
+
+    @Query("FROM DocInfo order by createdAt desc")
+    fun findAllOrderByCreatedAtOrderByDirectionDesc():
+            List<DocInfo>
+
 }

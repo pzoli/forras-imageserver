@@ -3,22 +3,28 @@ package hu.infokristaly.forrasimageserver.controllers
 import hu.infokristaly.forrasimageserver.entity.DocInfo
 import hu.infokristaly.forrasimageserver.entity.FileInfo
 import hu.infokristaly.forrasimageserver.repository.*
+import org.apache.tomcat.util.http.fileupload.impl.FileItemStreamImpl
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.core.io.InputStreamResource
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.util.FileCopyUtils
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestMethod
-import org.springframework.web.bind.annotation.RequestPart
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequest
+import java.io.ByteArrayInputStream
 import java.io.File
+import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
 import java.net.URI
+import java.nio.file.Files
+import java.nio.file.Paths
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.jvm.optionals.getOrNull
 
 
 @RestController
@@ -33,6 +39,19 @@ class ImageUploadController(
 
     @Value("\${temp.path}")
     private var tempPath: String = ""
+
+    @GetMapping("/{id}", produces = arrayOf(MediaType.APPLICATION_OCTET_STREAM_VALUE))
+    @ResponseBody
+    fun getImagesById(@PathVariable("id") id: Long): ResponseEntity<InputStreamResource> {
+        val fileInfo = fileInfoCRUDRepository.findById(id).getOrNull()
+        var stream: InputStreamResource? = null
+        if (fileInfo != null) {
+            stream = InputStreamResource(FileInputStream(Paths.get(tempPath,fileInfo.uniqueFileName).toFile()))
+        }
+        return ResponseEntity.ok()
+            .contentType(MediaType.APPLICATION_OCTET_STREAM)
+            .body(stream)
+    }
 
     @RequestMapping(value = arrayOf("/uploadimage"), method = arrayOf( RequestMethod.POST ), consumes = arrayOf(MediaType.MULTIPART_FORM_DATA_VALUE ))
     fun uploadScannedImage(@RequestPart(name = "file") file: MultipartFile, @RequestPart(name = "docid") docid: String, @RequestPart(name = "openPaint") openPaint: String) {

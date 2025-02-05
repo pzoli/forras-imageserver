@@ -10,7 +10,6 @@ import org.springframework.stereotype.Repository
 @Repository
 interface FileInfoRepo : JpaRepository<FileInfo, Long> {
 
-    @Query("FROM FileInfo WHERE docInfo = :docInfo")
-    fun findAllByFirstName(@Param("docInfo") docInfo: DocInfo):
-            List<FileInfo>
+    @Query("FROM FileInfo WHERE docInfo.id = :docInfoId")
+    fun findAllByDocInfoId(@Param("docInfoId") docInfoId: Long): List<FileInfo>
 }

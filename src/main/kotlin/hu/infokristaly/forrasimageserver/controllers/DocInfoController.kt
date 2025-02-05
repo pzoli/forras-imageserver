@@ -13,9 +13,9 @@ class DocInfoController(@Autowired private val docInfoRepo: DocInfoRepo) {
 
     @GetMapping("")
     fun getAllDocInfos(): List<DocInfo> =
-        docInfoRepo.findAll().toList()
+        docInfoRepo.findAllOrderByCreatedAtOrderByDirectionDesc().toList()
 
-    //create user
+    //create docinfo
     @PostMapping("")
     @ResponseBody
     fun createDocInfo(@RequestBody docInfo: DocInfo): ResponseEntity<DocInfo> {
@@ -23,7 +23,7 @@ class DocInfoController(@Autowired private val docInfoRepo: DocInfoRepo) {
         return ResponseEntity(savedDocInfo, HttpStatus.CREATED)
     }
 
-    //get user by id
+    //get docinfo by id
     @GetMapping("/{id}")
     fun getDocInfoById(@PathVariable("id") id: Long): ResponseEntity<DocInfo> {
         val docInfo = docInfoRepo.findById(id).orElse(null)
@@ -34,7 +34,7 @@ class DocInfoController(@Autowired private val docInfoRepo: DocInfoRepo) {
         }
     }
 
-    //update user
+    //update docinfo
     @PutMapping("/{id}")
     fun updateDocInfoById(@PathVariable("id") id: Long, @RequestBody docInfo: DocInfo): ResponseEntity<DocInfo> {
         val existingDocInfo = docInfoRepo.findById(id).orElse(null)
@@ -47,7 +47,7 @@ class DocInfoController(@Autowired private val docInfoRepo: DocInfoRepo) {
         return ResponseEntity(updatedDocInfo, HttpStatus.OK)
     }
 
-    //delete user
+    //delete docinfo
     @DeleteMapping("/{id}")
     fun deleteDocInfoById(@PathVariable("id") id: Long): ResponseEntity<DocInfo> {
         if (!docInfoRepo.existsById(id)){

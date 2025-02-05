@@ -1,5 +1,6 @@
 package hu.infokristaly.forrasimageserver.controllers
 
+import hu.infokristaly.forrasimageserver.entity.DocInfo
 import hu.infokristaly.forrasimageserver.entity.FileInfo
 import hu.infokristaly.forrasimageserver.repository.FileInfoRepo
 import org.springframework.beans.factory.annotation.Autowired
@@ -15,14 +16,18 @@ class FileInfoController(@Autowired private val fileInfoRepo: FileInfoRepo) {
     fun getAllFileInfo(): List<FileInfo> =
         fileInfoRepo.findAll().toList()
 
-    //create user
+    @GetMapping("/bydocinfoid/{id}")
+    fun getFileInfoByDocInfoId(@PathVariable("id") id: Long): List<FileInfo> =
+        fileInfoRepo.findAllByDocInfoId(id).toList()
+
+    //create FileInfo
     @PostMapping("")
     fun createFileInfo(@RequestBody fileInfo: FileInfo): ResponseEntity<FileInfo> {
         val savedFileInfo = fileInfoRepo.save(fileInfo)
         return ResponseEntity(savedFileInfo, HttpStatus.CREATED)
     }
 
-    //get user by id
+    //get FileInfo by id
     @GetMapping("/{id}")
     fun getFileInfoById(@PathVariable("id") id: Long): ResponseEntity<FileInfo> {
         val fileInfo = fileInfoRepo.findById(id).orElse(null)
@@ -33,7 +38,7 @@ class FileInfoController(@Autowired private val fileInfoRepo: FileInfoRepo) {
         }
     }
 
-    //update user
+    //update FileInfo
     @PutMapping("/{id}")
     fun updateFileInfoById(@PathVariable("id") id: Long, @RequestBody fileInfo: FileInfo): ResponseEntity<FileInfo> {
         val existingFileInfo = fileInfoRepo.findById(id).orElse(null)
@@ -46,7 +51,7 @@ class FileInfoController(@Autowired private val fileInfoRepo: FileInfoRepo) {
         return ResponseEntity(updatedFileInfo, HttpStatus.OK)
     }
 
-    //delete user
+    //delete FileInfo
     @DeleteMapping("/{id}")
     fun deleteDocInfoById(@PathVariable("id") id: Long): ResponseEntity<FileInfo> {
         if (!fileInfoRepo.existsById(id)){
