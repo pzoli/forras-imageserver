@@ -114,9 +114,28 @@ class ImageUploadController(
         fileInfo.docInfo = docInfo
         fileInfo = fileInfoCRUDRepository.save(fileInfo)
 
-        val location: URI = fromCurrentRequest().buildAndExpand().toUri()
-
         return fileInfo
+    }
+
+    @RequestMapping(value = arrayOf("/update/{id}"), method = arrayOf( RequestMethod.PUT ), consumes = arrayOf( MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_OCTET_STREAM_VALUE))
+    fun fileUpdate(@RequestPart("file") file: MultipartFile,@PathVariable("id") id: Long,) : ResponseEntity<FileInfo> {
+        var fileInfo = fileInfoCRUDRepository.findById(id).getOrNull()
+        if (fileInfo != null) {
+            val tempFile = File(tempPath,fileInfo.uniqueFileName)
+            try {
+                file.inputStream.use { `in` ->
+                    FileOutputStream(tempFile).use { out ->
+                        FileCopyUtils.copy(`in`, out)
+                    }
+                }
+                fileInfo.lenght = tempFile.length()
+                fileInfo = fileInfoCRUDRepository.save(fileInfo)
+                return ResponseEntity.ok(fileInfo)
+            } catch (ex: IOException) {
+                throw RuntimeException(ex)
+            }
+        }
+        return ResponseEntity.notFound().build()
     }
 
 }
