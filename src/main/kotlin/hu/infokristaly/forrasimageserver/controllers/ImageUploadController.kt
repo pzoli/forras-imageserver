@@ -4,6 +4,7 @@ import hu.infokristaly.forrasimageserver.entity.DocInfo
 import hu.infokristaly.forrasimageserver.entity.FileInfo
 import hu.infokristaly.forrasimageserver.repository.*
 import org.apache.tomcat.util.http.fileupload.impl.FileItemStreamImpl
+import org.hibernate.annotations.NotFound
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.io.InputStreamResource
@@ -118,7 +119,7 @@ class ImageUploadController(
     }
 
     @RequestMapping(value = arrayOf("/update/{id}"), method = arrayOf( RequestMethod.PUT ), consumes = arrayOf( MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_OCTET_STREAM_VALUE))
-    fun fileUpdate(@RequestPart("file") file: MultipartFile,@PathVariable("id") id: Long,) : ResponseEntity<FileInfo> {
+    fun fileUpdate(@RequestPart("file") file: MultipartFile,@PathVariable("id") id: Long,) : FileInfo? {
         var fileInfo = fileInfoCRUDRepository.findById(id).getOrNull()
         if (fileInfo != null) {
             val tempFile = File(tempPath,fileInfo.uniqueFileName)
@@ -130,12 +131,12 @@ class ImageUploadController(
                 }
                 fileInfo.lenght = tempFile.length()
                 fileInfo = fileInfoCRUDRepository.save(fileInfo)
-                return ResponseEntity.ok(fileInfo)
+                return fileInfo
             } catch (ex: IOException) {
                 throw RuntimeException(ex)
             }
         }
-        return ResponseEntity.notFound().build()
+        return null
     }
 
 }
