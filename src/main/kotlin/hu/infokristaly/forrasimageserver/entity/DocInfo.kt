@@ -31,5 +31,8 @@ data class DocInfo(
     @ManyToOne
     var clerk: Clerk?,
 
+    @Basic
+    var comment: String?,
+
     ) {
 }
