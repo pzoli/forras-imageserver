@@ -34,5 +34,7 @@ data class DocInfo(
     @Basic
     var comment: String?,
 
+    @ManyToOne
+    var docLocation: DocLocation
     ) {
 }
