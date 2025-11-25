@@ -35,6 +35,6 @@ data class DocInfo(
     var comment: String?,
 
     @ManyToOne
-    var docLocation: DocLocation
+    var docLocation: DocLocation?
     ) {
 }
