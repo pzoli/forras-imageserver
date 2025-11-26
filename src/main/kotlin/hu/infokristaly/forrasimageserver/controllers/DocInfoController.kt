@@ -1,17 +1,13 @@
 package hu.infokristaly.forrasimageserver.controllers
 
 import hu.infokristaly.forrasimageserver.entity.DocInfo
-import hu.infokristaly.forrasimageserver.repository.DocInfoRepo
 import hu.infokristaly.forrasimageserver.services.DocInfoService
 import hu.infokristaly.forrasimageserver.services.FileInfoService
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
-import java.nio.file.Files
-import java.nio.file.Paths
 
 @RestController
 @RequestMapping("/api/docinfo")
@@ -23,6 +19,16 @@ class DocInfoController(
     @GetMapping("")
     fun getAllDocInfos(): List<DocInfo> =
         docInfoService.getAllDocInfos()
+
+    @GetMapping("/page/{page}")
+    fun getDocInfoByPage(@PathVariable("page") page: Int): ResponseEntity<List<DocInfo>> {
+        val docInfos = docInfoService.getDocInfosByPage(page)
+        return if (docInfos != null) {
+            ResponseEntity(docInfos, HttpStatus.OK)
+        } else {
+            ResponseEntity(HttpStatus.NOT_FOUND)
+        }
+    }
 
     //create docinfo
     @PostMapping("")
@@ -77,3 +83,4 @@ class DocInfoController(
     }
 
 }
+
