@@ -34,8 +34,12 @@ class DocInfoController(
     @PostMapping("")
     @ResponseBody
     fun createDocInfo(@RequestBody docInfo: DocInfo): ResponseEntity<DocInfo> {
-        val savedDocInfo = docInfoService.save(docInfo)
-        return ResponseEntity(savedDocInfo, HttpStatus.CREATED)
+        try {
+            val savedDocInfo = docInfoService.save(docInfo)
+            return ResponseEntity(savedDocInfo, HttpStatus.CREATED)
+        } catch (e: Exception) {
+            return ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR)
+        }
     }
 
     //get docinfo by id
