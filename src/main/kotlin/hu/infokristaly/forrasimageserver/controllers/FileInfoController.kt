@@ -4,13 +4,18 @@ import hu.infokristaly.forrasimageserver.entity.DocInfo
 import hu.infokristaly.forrasimageserver.entity.FileInfo
 import hu.infokristaly.forrasimageserver.repository.FileInfoRepo
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.nio.file.Files
+import kotlin.io.path.Path
 
 @RestController
 @RequestMapping("/api/fileinfo")
 class FileInfoController(@Autowired private val fileInfoRepo: FileInfoRepo) {
+    @Value("\${temp.path}")
+    private var tempPath: String = ""
 
     @GetMapping("")
     fun getAllFileInfo(): List<FileInfo> =
@@ -53,12 +58,14 @@ class FileInfoController(@Autowired private val fileInfoRepo: FileInfoRepo) {
 
     //delete FileInfo
     @DeleteMapping("/{id}")
-    fun deleteDocInfoById(@PathVariable("id") id: Long): ResponseEntity<FileInfo> {
-        if (!fileInfoRepo.existsById(id)){
+    fun deleteFileInfoById(@PathVariable("id") id: Long): ResponseEntity<FileInfo> {
+        val existingFileInfo = fileInfoRepo.findById(id).orElse(null)
+        if (existingFileInfo == null){
             return ResponseEntity(HttpStatus.NOT_FOUND)
         }
 
         fileInfoRepo.deleteById(id)
+        Files.delete(Path(tempPath,existingFileInfo.uniqueFileName))
         return ResponseEntity(HttpStatus.NO_CONTENT)
     }
 
