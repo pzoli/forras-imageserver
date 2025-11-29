@@ -13,7 +13,7 @@ class OrganizationController(@Autowired private val organizationRepository: Orga
 
     @GetMapping("")
     fun getAllOrganizations(): List<Organization> =
-        organizationRepository.findAll().toList()
+        organizationRepository.findByOrderByNameAsc().toList()
 
     //create user
     @PostMapping("")

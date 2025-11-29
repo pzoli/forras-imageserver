@@ -13,7 +13,7 @@ class SubjectController(@Autowired private val subjectCRUDRepository: SubjectCRU
 
     @GetMapping("")
     fun getAllSubjects(): List<DocumentSubject> =
-        subjectCRUDRepository.findAll().toList()
+        subjectCRUDRepository.findByOrderByValueAsc().toList()
 
     //create user
     @PostMapping("")
