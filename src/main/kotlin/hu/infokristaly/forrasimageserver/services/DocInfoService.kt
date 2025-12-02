@@ -40,4 +40,19 @@ class DocInfoService(@Autowired private val docInfoRepo: DocInfoRepo, @Autowired
         return resultList
     }
 
+    fun findByCommentContainingIgnoreCase(filter: String, pageNumber: Int): List<DocInfo> {
+        val pageable: Pageable = PageRequest.of(pageNumber - 1, PAGE_SIZE,Sort.by("createdAt").descending())
+        val result = docInfoRepo.findByCommentContainingIgnoreCase(filter, pageable)
+        val resultList = result.toList()
+        return resultList
+    }
+
+    fun findByCommentContainingIgnoreCaseOrOrganizationNameContainingIgnoreCaseOrSubjectValueContainingIgnoreCase(filter: String, pageNumber: Int): List<DocInfo> {
+        val pageable: Pageable = PageRequest.of(pageNumber - 1, PAGE_SIZE,Sort.by("createdAt").descending())
+        val result = docInfoRepo.findByCommentContainingIgnoreCaseOrOrganizationNameContainingIgnoreCaseOrSubjectValueContainingIgnoreCase(filter, filter, filter, pageable)
+        val resultList = result.toList()
+        return resultList
+    }
+
+
 }

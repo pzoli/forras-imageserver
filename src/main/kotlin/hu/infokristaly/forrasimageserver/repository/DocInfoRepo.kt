@@ -21,4 +21,7 @@ interface DocInfoRepo : JpaRepository<DocInfo, Long> {
     fun findAllOrderByCreatedAtOrderByDirectionDesc():
             List<DocInfo>
 
+    fun findByCommentContainingIgnoreCase(comment: String, pageable: Pageable): List<DocInfo>
+
+    fun findByCommentContainingIgnoreCaseOrOrganizationNameContainingIgnoreCaseOrSubjectValueContainingIgnoreCase(comment: String, organizationName: String, subjectValue: String, pageable: Pageable): List<DocInfo>
 }

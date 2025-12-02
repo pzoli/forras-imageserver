@@ -30,6 +30,16 @@ class DocInfoController(
         }
     }
 
+    @GetMapping("/filter/{filter}/{page}")
+    fun getDocInfoByFilter(@PathVariable("filter") filter: String, @PathVariable("page") page: Int): ResponseEntity<List<DocInfo>> {
+        val docInfos = docInfoService.findByCommentContainingIgnoreCaseOrOrganizationNameContainingIgnoreCaseOrSubjectValueContainingIgnoreCase(filter,page)
+        return if (docInfos != null) {
+            ResponseEntity(docInfos, HttpStatus.OK)
+        } else {
+            ResponseEntity(HttpStatus.NOT_FOUND)
+        }
+    }
+
     //create docinfo
     @PostMapping("")
     @ResponseBody
